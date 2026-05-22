@@ -27,11 +27,11 @@ export function NoteForm(props: Mode) {
     fd.set("body", body);
 
     if (props.mode === "create") {
-      // createNoteAction redirects on success; if it returns, it failed.
       const res = await createNoteAction(fd);
+      // createNoteAction redirects on success; if it returns, it failed.
+      setPending(false);
       if (res && !res.ok) {
         setError(res.error);
-        setPending(false);
       }
       return;
     }
