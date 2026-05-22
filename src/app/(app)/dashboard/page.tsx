@@ -14,7 +14,7 @@ export default async function DashboardPage() {
       <div>
         <h1 className="text-2xl font-semibold">Welcome, {userName}.</h1>
         <p className="text-neutral-600 dark:text-neutral-400">
-          You're signed in. Try the notes demo to see how features are built in this stack.
+          You&apos;re signed in. Try the notes demo to see how features are built in this stack.
         </p>
       </div>
       <Card>

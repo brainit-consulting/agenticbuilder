@@ -2,7 +2,7 @@ import { config as loadEnv } from "dotenv";
 
 loadEnv({ path: ".env.test", quiet: true });
 
-// @ts-ignore NODE_ENV is read-only but Vitest sets it
+// @ts-expect-error NODE_ENV is read-only but Vitest sets it
 process.env.NODE_ENV = process.env.NODE_ENV ?? "test";
 process.env.DATABASE_URL = process.env.DATABASE_URL ?? "postgres://test:test@localhost:5432/test";
 process.env.BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET ?? "test-secret-32-bytes-ok-for-tests";
