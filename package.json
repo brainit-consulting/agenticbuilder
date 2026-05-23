@@ -13,6 +13,9 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --reporter=default",
+    "test:unit": "vitest run --project unit --reporter=default",
+    "test:integration": "vitest run --project integration --reporter=default",
+    "test:e2e": "playwright test",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -36,6 +39,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.50.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2",
     "@types/node": "^22",
