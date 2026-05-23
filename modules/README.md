@@ -6,6 +6,10 @@ steps, source files to drop into `src/`, declared deps, env keys, and any
 DB migrations the module owns. **No codemod scripts** — the README is the
 contract.
 
+> **Status:** All seven modules are present under `modules/<name>/`. Six
+> are also INSTALLED in the trunk reference build (v0.2.0+); the `stripe`
+> module is artifact-only pending Stripe test-mode setup.
+
 ## Why not codemod scripts?
 
 A codemod is opaque and breaks the moment a host project's file shape
@@ -58,20 +62,17 @@ the onboarding skill can parse it deterministically:
 <reverse steps, listed explicitly>
 ```
 
-## The seven modules (planned)
+## The seven modules
 
-| Module | What it adds | Depends on |
-|---|---|---|
-| `stripe` | `src/lib/stripe/`, `/api/stripe/webhook`, `/billing` page, separate `subscription` table (FK → `user.id`) | — |
-| `ai-sdk` | `src/lib/ai/`, `/api/chat` streaming route, `<Chat>` component, model picker via Vercel AI Gateway | — |
-| `blob` | `src/lib/blob.ts`, `/api/upload` signed URL route, `<FileUpload>` component | — |
-| `email-resend` | `src/lib/email/`, template dir, `sendEmail()` helper, optional Better-Auth email-verification hook | — |
-| `vitest` | Expanded testing scaffold on top of trunk's minimal vitest: integration tests with a real test DB, RSC test helpers, Playwright e2e, CI workflow stub | — |
-| `role-gates` | `role` column on `user` (`'user' \| 'admin'`), `requireRole()` server helper, `<RequireRole>` client gate, **owner-bypass keyed on `OWNER_EMAIL`** | — |
-| `admin-scaffold` | `(app)/admin/*` routes (users list, role editor) | `role-gates` |
-
-Modules themselves are implemented in **Plan B** (see
-`docs/superpowers/plans/`).
+| Module | What it adds | Depends on | Installed in trunk? |
+|---|---|---|---|
+| `stripe` | `src/lib/stripe/`, `/api/stripe/webhook`, `/billing` page, separate `subscription` table (FK → `user.id`) | — | No (artifact-only) |
+| `ai-sdk` | `src/lib/ai/`, `/api/chat` streaming route, `<Chat>` component, model picker via Vercel AI Gateway | — | Yes |
+| `blob` | `src/lib/blob.ts`, `/api/upload` signed URL route, `<FileUpload>` component, `attachment` table | — | Yes |
+| `email-resend` | `src/lib/email/`, template dir, `sendEmail()` helper, Better-Auth email-verification + real password reset | — | Yes |
+| `vitest` | Expanded testing scaffold on top of trunk's minimal vitest: integration tests with a real Neon test branch, Playwright e2e scaffold, GitHub Actions CI workflow | — | Yes |
+| `role-gates` | `role` column on `user` (`'user' \| 'admin'`), `requireRole()` server helper, `<RequireRole>` client gate, **owner-bypass keyed on `OWNER_EMAIL`** | — | Yes |
+| `admin-scaffold` | `(app)/admin/*` routes (users list, role editor) | `role-gates` | Yes |
 
 ## Installing a module manually
 
