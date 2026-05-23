@@ -12,6 +12,12 @@ const envSchema = z.object({
   AI_GATEWAY_API_KEY: z
     .string()
     .startsWith("vck_", "AI_GATEWAY_API_KEY must start with vck_"),
+  BLOB_READ_WRITE_TOKEN: z
+    .string()
+    .startsWith(
+      "vercel_blob_rw_",
+      "BLOB_READ_WRITE_TOKEN must start with vercel_blob_rw_",
+    ),
 });
 
 export type Env = z.infer<typeof envSchema>;

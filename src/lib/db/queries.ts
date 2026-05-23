@@ -1,6 +1,13 @@
 import { eq, desc, and } from "drizzle-orm";
 import { db } from "./client";
-import { notes, user, type Note, type User } from "./schema";
+import {
+  attachment,
+  notes,
+  user,
+  type Attachment,
+  type Note,
+  type User,
+} from "./schema";
 
 export async function getUserById(id: string): Promise<User | undefined> {
   const rows = await db.select().from(user).where(eq(user.id, id)).limit(1);
@@ -59,4 +66,39 @@ export async function deleteNoteForUser(
     .where(and(eq(notes.id, noteId), eq(notes.userId, userId)))
     .returning({ id: notes.id });
   return rows.length > 0;
+}
+
+export async function listAttachmentsForNote(
+  noteId: string,
+  userId: string,
+): Promise<Attachment[]> {
+  return db
+    .select()
+    .from(attachment)
+    .where(and(eq(attachment.noteId, noteId), eq(attachment.userId, userId)))
+    .orderBy(desc(attachment.createdAt));
+}
+
+export async function createAttachment(input: {
+  id: string;
+  userId: string;
+  noteId: string | null;
+  url: string;
+  pathname: string;
+  size: number;
+  contentType: string;
+}): Promise<Attachment> {
+  const [row] = await db.insert(attachment).values(input).returning();
+  return row;
+}
+
+export async function deleteAttachmentForUser(
+  attachmentId: string,
+  userId: string,
+): Promise<Attachment | undefined> {
+  const [row] = await db
+    .delete(attachment)
+    .where(and(eq(attachment.id, attachmentId), eq(attachment.userId, userId)))
+    .returning();
+  return row;
 }

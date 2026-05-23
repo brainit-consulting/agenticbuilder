@@ -15,6 +15,13 @@
       "when": 1779566121771,
       "tag": "0001_modern_randall",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779572006168,
+      "tag": "0002_shiny_shockwave",
+      "breakpoints": true
     }
   ]
 }

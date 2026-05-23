@@ -3,6 +3,7 @@ import {
   text,
   timestamp,
   boolean,
+  integer,
   index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
@@ -84,14 +85,44 @@ export const notes = pgTable(
   }),
 );
 
+export const attachment = pgTable(
+  "attachment",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    noteId: text("note_id").references(() => notes.id, {
+      onDelete: "cascade",
+    }),
+    url: text("url").notNull(),
+    pathname: text("pathname").notNull(),
+    size: integer("size").notNull(),
+    contentType: text("content_type").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    byUserNote: index("attachment_by_user_note_idx").on(t.userId, t.noteId),
+  }),
+);
+
 export const userRelations = relations(user, ({ many }) => ({
   notes: many(notes),
+  attachments: many(attachment),
 }));
 
-export const notesRelations = relations(notes, ({ one }) => ({
+export const notesRelations = relations(notes, ({ one, many }) => ({
   user: one(user, { fields: [notes.userId], references: [user.id] }),
+  attachments: many(attachment),
+}));
+
+export const attachmentRelations = relations(attachment, ({ one }) => ({
+  user: one(user, { fields: [attachment.userId], references: [user.id] }),
+  note: one(notes, { fields: [attachment.noteId], references: [notes.id] }),
 }));
 
 export type User = typeof user.$inferSelect;
 export type Note = typeof notes.$inferSelect;
 export type NewNote = typeof notes.$inferInsert;
+export type Attachment = typeof attachment.$inferSelect;
+export type NewAttachment = typeof attachment.$inferInsert;

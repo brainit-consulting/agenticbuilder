@@ -4,6 +4,7 @@ import { requireSession } from "@/lib/auth/roles";
 import { getNoteForUser } from "@/lib/db/queries";
 import { NoteForm } from "../_components/NoteForm";
 import { DeleteButton } from "../_components/DeleteButton";
+import { Attachments } from "./_components/Attachments";
 
 export default async function NoteDetailPage({
   params,
@@ -36,6 +37,7 @@ export default async function NoteDetailPage({
         initialTitle={note.title}
         initialBody={note.body}
       />
+      <Attachments noteId={note.id} userId={session.user.id} />
     </div>
   );
 }

@@ -12,3 +12,5 @@ process.env.RESEND_API_KEY = process.env.RESEND_API_KEY ?? "re_test_key_for_test
 process.env.EMAIL_FROM = process.env.EMAIL_FROM ?? "no-reply@example.com";
 process.env.AI_GATEWAY_API_KEY =
   process.env.AI_GATEWAY_API_KEY ?? "vck_test_default_for_unit_tests_only_padding_padding";
+process.env.BLOB_READ_WRITE_TOKEN =
+  process.env.BLOB_READ_WRITE_TOKEN ?? "vercel_blob_rw_test_default_token_for_unit_tests_only";
