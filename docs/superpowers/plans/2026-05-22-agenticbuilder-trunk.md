@@ -451,7 +451,7 @@ git commit -m "chore: add gitignore, env example, vercel config, claude allowlis
 ## 2. Before you touch Next.js code
 Read `node_modules/next/dist/docs/` first. This repo pins Next.js 16.2.6;
 its API differs from training-data Next.js in concrete ways:
-- middleware lives in `proxy.ts` (root), not `middleware.ts`
+- middleware lives in `src/proxy.ts` (alongside `app/`), not `middleware.ts`
 - Cache Components: `'use cache'` directive + `cacheLife` / `cacheTag`
 - React 19 APIs (`use()`, Actions, `<form action={fn}>`)
 
@@ -1237,9 +1237,15 @@ git commit -m "feat(auth): wire Better-Auth (server, react client, route handler
 ## Task 10: Proxy middleware
 
 **Files:**
-- Create: `proxy.ts`
+- Create: `src/proxy.ts`
 
-- [ ] **Step 1: `proxy.ts` (Next.js 16 middleware at repo root)**
+**Location note:** Next.js 16 looks for `proxy.ts` next to `app/`. Because
+this project uses the `src/` layout (`src/app/...`), the file MUST live at
+`src/proxy.ts`. Putting it at the repo root silently disables it — Next.js
+won't error, the proxy function simply never runs and the app falls back to
+the layout-only session check.
+
+- [ ] **Step 1: `src/proxy.ts` (Next.js 16 middleware alongside `app/`)**
 
 ```ts
 import { NextResponse, type NextRequest } from "next/server";
@@ -1273,8 +1279,9 @@ export function proxy(req: NextRequest) {
   return NextResponse.next();
 }
 
+// `/notes/:path*` only matches sub-paths in Next.js, so list bare paths too.
 export const config = {
-  matcher: ["/dashboard/:path*", "/notes/:path*"],
+  matcher: ["/dashboard", "/dashboard/:path*", "/notes", "/notes/:path*"],
 };
 ```
 
@@ -1289,7 +1296,7 @@ Expected: 0 errors.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add proxy.ts
+git add src/proxy.ts
 git commit -m "feat: add Next.js 16 proxy.ts gating (app) routes"
 ```
 

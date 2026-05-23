@@ -29,6 +29,7 @@ export function proxy(req: NextRequest) {
   return NextResponse.next();
 }
 
+// `/notes/:path*` only matches sub-paths in Next.js, so list bare paths too.
 export const config = {
-  matcher: ["/dashboard/:path*", "/notes/:path*"],
+  matcher: ["/dashboard", "/dashboard/:path*", "/notes", "/notes/:path*"],
 };

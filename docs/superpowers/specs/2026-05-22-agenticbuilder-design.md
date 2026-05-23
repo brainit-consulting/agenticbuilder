@@ -88,7 +88,7 @@ h:/AgenticBuilder/
 ├── drizzle/migrations/
 ├── public/
 ├── scripts/
-├── proxy.ts                       (Next.js 16 middleware; root, not src/)
+├── src/proxy.ts                   (Next.js 16 middleware; must live next to app/, so under src/)
 ├── AGENTS.md
 ├── CLAUDE.md                      (one line: @AGENTS.md)
 ├── README.md
@@ -181,7 +181,7 @@ h:/AgenticBuilder/
 
 | Path | Purpose |
 |---|---|
-| `proxy.ts` | Next.js 16 middleware. Reads Better-Auth session cookie; redirects unauthenticated requests to `(app)/*` → `/login`. |
+| `src/proxy.ts` | Next.js 16 middleware (`proxy.ts` lives next to `app/`; with the `src/` layout that means inside `src/`, not the repo root — putting it at the root silently disables it). Reads Better-Auth session cookie; redirects unauthenticated requests to `(app)/*` → `/login`. |
 | `src/lib/env.ts` | Zod-validated env access. Exports a typed `env` object. Throws at boot if required vars missing. |
 | `src/lib/auth/server.ts` | `betterAuth({...})` instance bound to Drizzle adapter using core tables. |
 | `src/lib/auth/client.ts` | `createAuthClient()` for React. |
@@ -294,7 +294,7 @@ One line, so it works across AI tools:
 ## 2. Before you touch Next.js code
 Read node_modules/next/dist/docs/ first. This repo pins Next.js 16.2.6;
 its API differs from training-data Next.js in concrete ways:
-- middleware lives in proxy.ts (root), not middleware.ts
+- middleware lives in src/proxy.ts (alongside app/), not middleware.ts
 - Cache Components: 'use cache' directive + cacheLife / cacheTag
 - React 19 APIs (use(), Actions, <form action={fn}>)
 

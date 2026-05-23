@@ -4,18 +4,13 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { nanoid } from "nanoid";
-import { z } from "zod";
 import { auth } from "@/lib/auth/server";
 import {
   createNote,
   updateNoteForUser,
   deleteNoteForUser,
 } from "@/lib/db/queries";
-
-const noteInputSchema = z.object({
-  title: z.string().trim().min(1, "Title is required").max(200),
-  body: z.string().max(50_000).default(""),
-});
+import { noteInputSchema } from "./_schema";
 
 export type NoteActionResult =
   | { ok: true }
@@ -71,6 +66,3 @@ export async function deleteNoteAction(noteId: string): Promise<void> {
   revalidatePath("/notes");
   redirect("/notes");
 }
-
-// Re-export the schema for tests.
-export const _noteInputSchema = noteInputSchema;

@@ -34,3 +34,6 @@ drizzle/meta/_journal.json.bak
 
 # claude code parallel-session worktrees (claude agents view)
 .claude/worktrees/
+
+# playwright mcp screenshots / snapshots
+.playwright-mcp/
