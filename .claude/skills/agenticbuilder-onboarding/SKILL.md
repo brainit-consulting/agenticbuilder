@@ -65,16 +65,32 @@ Read `@references/rename-checklist.md`. For each entry under "Files to
 rewrite", apply the rename. Do NOT touch any file listed under "Files
 to LEAVE ALONE".
 
+**After applying renames, run the verification grep** from
+`references/rename-checklist.md`:
+
+```bash
+grep -rli "agenticbuilder" \
+  --exclude-dir=node_modules \
+  --exclude-dir=.next \
+  --exclude-dir=.git \
+  --exclude-dir=modules \
+  --exclude-dir=.claude/skills \
+  --exclude-dir=docs/superpowers \
+  .
+```
+
+Expected: zero matches, or only files in the LEAVE ALONE list. If
+anything else prints, **halt** and report the list of stragglers — do
+not blind-rewrite them; the checklist needs updating first.
+
 Offer:
 > "Want me to `git init && git add -A && git commit -m 'chore: initial
 > commit from agenticbuilder template'`? (yes/no)"
 
 Only run on `yes`.
 
-**Success criterion:** every file in the rename checklist no longer
-contains the literal `agenticbuilder` (case-insensitive), EXCEPT files
-under `modules/`, `.claude/skills/`, `docs/superpowers/`, and the
-"leave alone" list.
+**Success criterion:** the verification grep above is clean (zero
+matches outside the LEAVE ALONE list).
 
 ## STEP 3 — Owner email
 
