@@ -43,10 +43,20 @@ never run destructive ops without explicit confirmation.
 
 Read `.agenticbuilder-onboarded` at the repo root.
 
-- **If present:** parse `installed_modules:`. Greet the user with:
-  > "You're already onboarded. Want to add more modules?"
-  On `yes`, skip to STEP 5 with the catalog filtered to NOT-installed
-  modules. On `no`, exit quietly.
+- **If present:** parse `progress:` and `installed_modules:`.
+  - If every step under `progress:` is `done`: onboarding is complete.
+    Greet:
+    > "You're already onboarded. Want to add more modules?"
+    On `yes`, skip to STEP 5 with the catalog filtered to NOT-installed
+    modules. On `no`, exit quietly.
+  - If any step is `in-progress` or `pending`: a previous run was
+    interrupted. Greet:
+    > "Onboarding is partially complete. Resume from STEP <N>? (yes/no)"
+    On `yes`, jump to the first non-`done` step and continue from there
+    (preserving the already-recorded `project_name`, `project_title`,
+    etc.). On `no`, exit quietly.
+  - Check for natural-language `--force` (see Re-entrance section
+    below); if detected, confirm and restart from STEP 2.
 
 - **If absent:** check `package.json#name`.
   - If it equals `"agenticbuilder"`, proceed to STEP 2.
@@ -224,16 +234,33 @@ On `yes`:
 vercel link
 ```
 
-Then for each NON-secret key in `.env.local` (`BETTER_AUTH_URL`,
-`OWNER_EMAIL`), ask the user whether to push it:
+Classify every key in `.env.local` into secret vs non-secret using the
+lists below. Push non-secrets via the CLI; instruct the user to paste
+secrets into the dashboard.
+
+**Secret keys (do NOT push via `vercel env add`; user pastes in dashboard):**
+
+- `DATABASE_URL`, `BETTER_AUTH_SECRET`, `STRIPE_SECRET_KEY`,
+  `STRIPE_WEBHOOK_SECRET`, `RESEND_API_KEY`, `AI_GATEWAY_API_KEY`,
+  `BLOB_READ_WRITE_TOKEN`, any key matching `*_SECRET` or `*_TOKEN` or
+  `*_KEY` (except `NEXT_PUBLIC_*_KEY`, which is public by Next's
+  convention).
+
+**Non-secret keys (safe to push via `echo "<value>" | vercel env add <KEY> production`):**
+
+- `BETTER_AUTH_URL`, `OWNER_EMAIL`, `EMAIL_FROM`,
+  `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_PRICE_PRO`,
+  `STRIPE_PRICE_TEAM`, any `NEXT_PUBLIC_*` key.
+
+For each NON-secret key found, ask the user whether to push it, then:
 
 ```bash
 echo "<value>" | vercel env add <KEY> production
 ```
 
-For SECRET keys (`DATABASE_URL`, `BETTER_AUTH_SECRET`, any module
-secrets), print the list and instruct the user to paste them into the
-Vercel dashboard directly:
+For SECRET keys, print the list and instruct the user to paste them
+into the Vercel dashboard directly:
+
 > "Paste these into https://vercel.com/<team>/<project>/settings/environment-variables :
 >  - DATABASE_URL
 >  - BETTER_AUTH_SECRET
@@ -245,16 +272,28 @@ Vercel dashboard directly:
 
 Write `.agenticbuilder-onboarded` at repo root:
 
-```
+```yaml
 # AgenticBuilder onboarding marker — do not delete.
 # Touching this file disables the onboarding skill's auto-greet on next open.
 onboarded_at: <ISO 8601 UTC timestamp>
 project_name: <kebab-case slug>
 project_title: <Title Case name>
+progress:
+  step-2-rename: done
+  step-3-owner-email: done
+  step-4-database: done
+  step-5-modules: done
+  step-6-vercel: done
+  step-7-finalize: done
 installed_modules:
   - <module-1>
   - <module-2>
 ```
+
+The `progress:` map is **append-as-you-go**: each step writes its key
+on success so a crash/abort mid-flow leaves a partial marker that the
+next invocation can resume from (see Re-entrance below). Use values
+`done` | `in-progress` | `pending` | `skipped`.
 
 Ask:
 > "The brainstorm handoff at `docs/brainstorm-handoff-2026-05-22.md` is
@@ -290,6 +329,38 @@ Print the summary:
   to STEP 5 with the catalog filtered to NOT-installed modules.
 - A re-entrant run skips STEPs 2, 3, 4, 6 and only updates
   `installed_modules:` in the marker at STEP 7.
-- If the user genuinely wants to start over, they pass `--force`. The
-  skill replies: "Re-running from scratch will overwrite your project
-  name and re-prompt for all env vars. Are you sure? (type 'yes')".
+
+### Resume from partial
+
+Each step updates the `progress:` map in the marker as it completes:
+
+- On entry to STEP N, set `step-N-<name>: in-progress` and write.
+- On successful exit from STEP N, set `step-N-<name>: done` and write.
+- If a step is skipped (e.g., STEP 6 declined), write `skipped`.
+
+If the skill is invoked again before all steps are `done`, STEP 1
+detects the partial marker and offers to resume from the first
+non-`done` step. The user can decline (e.g., to start fresh via
+`--force`).
+
+### `--force` re-run (NL detection)
+
+Claude Code skills don't accept argv, so `--force` is a natural-language
+signal. Treat any of the following user phrases as `--force`:
+
+- "re-run from scratch"
+- "force re-run" / "force rerun"
+- "start over"
+- "redo onboarding"
+- "wipe and restart"
+- "rerun onboarding from scratch"
+- "I want to start the onboarding fresh"
+
+On detection, reply:
+
+> "Re-running from scratch will overwrite your project name and
+> re-prompt for all env vars. Are you sure? (type 'yes')"
+
+Only on literal `yes`: rename the marker to
+`.agenticbuilder-onboarded.bak.<timestamp>`, then proceed to STEP 2 as
+if this were a fresh clone.
