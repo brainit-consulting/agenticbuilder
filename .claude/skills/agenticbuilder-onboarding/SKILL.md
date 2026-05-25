@@ -119,6 +119,35 @@ Ask:
 >  2. Create a new Neon project (open https://console.neon.tech)
 >  3. Provision via Vercel Marketplace"
 
+**Pre-flight (only if user picks choice 2 or 3):** Before walking the
+user through Neon project creation, check whether they're near Neon's
+project limit. Run via the Neon MCP plugin:
+
+```
+mcp__plugin_neon_neon__list_projects  (no args)
+```
+
+(The Neon MCP plugin auth flow is documented in the user's memory at
+`reference_neon_mcp_plugin.md`. If the plugin isn't authenticated yet,
+the tool returns an OAuth URL — hand it to the user and resume after.)
+
+If `projects.length >= 9` (Neon Hobby allows 10 per org), tell the user:
+
+> "You have N Neon projects already (Hobby plan limit is 10). Creating
+> a new one may hit the limit and return a 404. Alternatives:
+>   a) Use a branch on an existing Neon project (free, fast)
+>   b) Delete an unused project first
+>   c) Upgrade Neon plan
+> Want me to (a) create a branch on an existing project for you?"
+
+If yes, offer the project list and let the user pick. Then run
+`mcp__plugin_neon_neon__create_branch` with the project's id and a
+branch name (e.g., `<projectname>-main`). Use the resulting branch's
+connection string (via `mcp__plugin_neon_neon__get_connection_string`,
+passing `branchId` explicitly) as the project's DATABASE_URL.
+
+Then proceed to the original choices for users not near the limit.
+
 On choice 3, run (stop on any non-zero exit):
 
 ```bash
