@@ -9,10 +9,6 @@ jobs:
   unit:
     name: Unit tests
     runs-on: ubuntu-latest
-    # Skip until onboarding is complete. The marker is written by the
-    # agenticbuilder-onboarding skill's STEP 7. Fresh template clones
-    # don't have it yet, so CI stays green until the project is real.
-    if: ${{ hashFiles('.agenticbuilder-onboarded') != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,10 +23,9 @@ jobs:
   integration:
     name: Integration tests (Neon test branch)
     runs-on: ubuntu-latest
-    # Skip until onboarding is complete (see `unit` job comment) AND
-    # when the secret isn't configured (e.g. fork PRs) so the job
-    # doesn't fail the whole workflow with "DATABASE_URL_TEST is not set".
-    if: ${{ hashFiles('.agenticbuilder-onboarded') != '' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork == false) }}
+    # Skip on fork PRs (secrets aren't available) so the job doesn't
+    # fail the whole workflow with "DATABASE_URL_TEST is not set".
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.fork == false }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -49,8 +44,6 @@ jobs:
   e2e:
     name: Playwright e2e
     runs-on: ubuntu-latest
-    # Skip until onboarding is complete (see `unit` job comment).
-    if: ${{ hashFiles('.agenticbuilder-onboarded') != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
