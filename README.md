@@ -25,6 +25,33 @@ Open this repo in Claude Code. The onboarding skill at
 through renaming, env setup, module selection, and verification. (Skill
 lands in a later release; see `docs/superpowers/specs/`.)
 
+## Two paths through this template
+
+This template can be used two ways. Pick what matches your project.
+
+### Path A — "Full demo" (recommended for first-time users)
+
+Clone the default branch. You get the trunk PLUS all 6 modules already
+installed and wired into the demo (auth, email-verification, password
+reset, AI-Gateway chat, blob uploads, vitest integration tests,
+admin dashboard, role gates). The onboarding skill renames + sets up
+env, but doesn't strip modules.
+
+```bash
+gh repo create my-app --template brainit-consulting/agenticbuilder --private
+```
+
+### Path B — "Lean" (use the skill's module-add flow as designed)
+
+Clone the `v0.1.0` tag — the lean trunk before any modules were
+installed. The skill's STEP 5 will offer each module as a checklist;
+pick only what you need.
+
+```bash
+gh repo create my-app --template brainit-consulting/agenticbuilder --private
+cd my-app && git checkout v0.1.0
+```
+
 ## Modules
 
 Each `modules/<name>/` is a self-contained instructions packet (README +

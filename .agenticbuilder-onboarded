@@ -1,0 +1,21 @@
+# AgenticBuilder onboarding marker — do not delete.
+#
+# This file's presence is the canonical signal that onboarding completed.
+# In a fresh template clone, the onboarding skill writes this on STEP 7.
+#
+# This particular marker lives in the CANONICAL agenticbuilder repo
+# (brainit-consulting/agenticbuilder) itself — even though no human ran
+# the onboarding skill against it — so that CI workflows gated behind
+# `hashFiles('.agenticbuilder-onboarded') != ''` will run on every push
+# to the template repo. The marker tells GitHub Actions "this isn't a
+# pre-onboarding fresh clone; run the tests."
+onboarded_at: 2026-05-22T00:00:00Z (template author marker; canonical repo)
+project_name: agenticbuilder
+project_title: AgenticBuilder
+installed_modules:
+  - role-gates
+  - email-resend
+  - ai-sdk
+  - blob
+  - vitest
+  - admin-scaffold

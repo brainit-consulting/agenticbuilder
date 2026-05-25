@@ -23,8 +23,8 @@ jobs:
   integration:
     name: Integration tests (Neon test branch)
     runs-on: ubuntu-latest
-    # Skip when the secret isn't configured (e.g. fork PRs) so the job
-    # doesn't fail the whole workflow with "DATABASE_URL_TEST is not set".
+    # Skip on fork PRs (secrets aren't available) so the job doesn't
+    # fail the whole workflow with "DATABASE_URL_TEST is not set".
     if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.fork == false }}
     steps:
       - uses: actions/checkout@v4

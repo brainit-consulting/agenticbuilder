@@ -30,6 +30,23 @@ its API differs from training-data Next.js in concrete ways:
   workflows — `.claude/worktrees/` is gitignored so tools like Claude
   Code's `claude agents` view can isolate sessions out of the box. Use
   it if you like; no convention here depends on it.
+- **Client/server constants split**: any constant shared between server
+  components AND client components MUST live in a separate module that
+  doesn't import server-only code (DB client, `env.ts`, `auth/server.ts`).
+  When a client component imports a constant from a server-only module,
+  the bundler drags the whole module's transitive dependencies into the
+  browser bundle — `env.ts` then throws "DATABASE_URL: expected string,
+  received undefined" at module load. Put shared constants in a file
+  like `src/lib/<feature>/constants.ts` and re-export from the
+  server-only module if the server also uses them.
+- **drizzle-kit `generate` in non-interactive shells**: when adding a new
+  table while removing another (e.g., renaming a feature), drizzle-kit's
+  diff prompts "Is X a rename of Y?" and requires a TTY. In CI / agent
+  shells this hangs forever. Workaround: write the migration SQL by hand
+  + the corresponding `meta/<NNNN>_snapshot.json` + bump
+  `meta/_journal.json`. Use `drizzle-kit migrate` to apply (that one is
+  non-interactive). Reference: apptracker's `0003_swap_notes_for_apps.sql`
+  for the format.
 
 ## 4. Verification discipline
 Before claiming "done":
