@@ -152,6 +152,25 @@ If verification emails don't arrive: check Resend dashboard for the
 delivery log, confirm `EMAIL_FROM`'s domain is verified, and inspect the
 dev-server console for any thrown errors from `sendEmail()`.
 
+## Known limitations
+
+- **Resend sandbox addresses.** Resend's free-tier API keys only deliver
+  to email addresses on a verified domain. If `EMAIL_FROM` is set to a
+  verified domain but the recipient is on a different domain, the call
+  succeeds silently from your code's perspective but Resend bounces or
+  drops the message. Combined with `requireEmailVerification: true`,
+  this silently rolls back signups for arbitrary email addresses
+  during testing. Workarounds:
+  - Use addresses on the verified domain for testing.
+  - Temporarily flip `requireEmailVerification` to `false` in
+    `src/lib/auth/server.ts` while developing.
+  - Manually set `email_verified = true` in the DB for test accounts
+    via Neon Console or `mcp__plugin_neon_neon__run_sql`.
+- **Session staleness on email change.** Better-Auth caches session
+  data; an email change applied via SQL won't show up in an active
+  session until the next `updateAge` cycle. Sign out + sign in to
+  refresh.
+
 ## Uninstall
 
 1. Remove the copied source files:
