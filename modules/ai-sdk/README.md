@@ -26,7 +26,7 @@ the work and `result.toUIMessageStreamResponse()` returns an SSE stream the
 
 | Key | Required | Where to get it | Example |
 |---|---|---|---|
-| `AI_GATEWAY_API_KEY` | yes | Vercel Dashboard → AI Gateway → API keys (must start with `vck_`) | `vck_4swydBjOwcotalfOVfNGsuW5ZdDtdSKmnieJDG7v5oz9gl1YbR0jnqPS` |
+| `AI_GATEWAY_API_KEY` | yes | Vercel Dashboard → AI Gateway → API keys (must start with `vck_`) | `vck_xxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
 
 ## Install
 
